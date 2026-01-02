@@ -49,7 +49,7 @@ export function FileImportTab({ onImport }: FileImportTabProps) {
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="p-4 bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-[var(--radius-2xl)]">
                 <p className="text-[var(--text-color-secondary)] text-sm mb-4">
-                    选择之前导出的设置文件（JSON 格式）。支持新旧版本格式。
+                    选择之前导出的设置文件（JSON 配置文件）。支持新旧版本格式。
                 </p>
 
                 <input

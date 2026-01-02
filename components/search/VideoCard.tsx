@@ -18,6 +18,7 @@ interface VideoCardProps {
     cardId: string;
     isActive: boolean;
     onCardClick: (e: React.MouseEvent, cardId: string, videoUrl: string) => void;
+    isSecret?: boolean;
 }
 
 export const VideoCard = memo<VideoCardProps>(({
@@ -25,7 +26,8 @@ export const VideoCard = memo<VideoCardProps>(({
     videoUrl,
     cardId,
     isActive,
-    onCardClick
+    onCardClick,
+    isSecret = false
 }) => {
     return (
         <div
@@ -107,6 +109,7 @@ export const VideoCard = memo<VideoCardProps>(({
                                 remarks={video.vod_remarks}
                                 size={16}
                                 className="shadow-md"
+                                isSecret={isSecret}
                             />
                         </div>
 

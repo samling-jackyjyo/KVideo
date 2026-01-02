@@ -6,7 +6,7 @@
 'use client';
 
 import { memo, useCallback, useState, useEffect } from 'react';
-import { useFavoritesStore } from '@/lib/store/favorites-store';
+import { useFavorites } from '@/lib/store/favorites-store';
 import { Icons } from '@/components/ui/Icon';
 
 interface FavoriteButtonProps {
@@ -21,6 +21,7 @@ interface FavoriteButtonProps {
     className?: string;
     size?: number;
     showTooltip?: boolean;
+    isSecret?: boolean;
 }
 
 export const FavoriteButton = memo<FavoriteButtonProps>(({
@@ -35,8 +36,9 @@ export const FavoriteButton = memo<FavoriteButtonProps>(({
     className = '',
     size = 20,
     showTooltip = true,
+    isSecret = false,
 }) => {
-    const { isFavorite, toggleFavorite } = useFavoritesStore();
+    const { isFavorite, toggleFavorite } = useFavorites(isSecret);
     const [isAnimating, setIsAnimating] = useState(false);
     const [isFav, setIsFav] = useState(false);
 

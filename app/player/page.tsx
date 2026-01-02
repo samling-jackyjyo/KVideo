@@ -9,8 +9,7 @@ import { EpisodeList } from '@/components/player/EpisodeList';
 import { PlayerError } from '@/components/player/PlayerError';
 import { SourceSelector, SourceInfo } from '@/components/player/SourceSelector';
 import { useVideoPlayer } from '@/lib/hooks/useVideoPlayer';
-import { useHistoryStore } from '@/lib/store/history-store';
-import { WatchHistorySidebar } from '@/components/history/WatchHistorySidebar';
+import { useHistory } from '@/lib/store/history-store';
 import { FavoritesSidebar } from '@/components/favorites/FavoritesSidebar';
 import { FavoriteButton } from '@/components/favorites/FavoriteButton';
 import { PlayerNavbar } from '@/components/player/PlayerNavbar';
@@ -20,7 +19,8 @@ import Image from 'next/image';
 function PlayerContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { addToHistory } = useHistoryStore();
+  const isSecret = searchParams.get('secret') === '1';
+  const { addToHistory } = useHistory(isSecret);
 
   const videoId = searchParams.get('id');
   const source = searchParams.get('source');
@@ -162,6 +162,7 @@ function PlayerContent() {
                 totalEpisodes={videoData?.episodes?.length || 1}
                 onNextEpisode={handleNextEpisode}
                 isReversed={isReversed}
+                isSecret={isSecret}
               />
               <VideoMetadata
                 videoData={videoData}
@@ -180,6 +181,7 @@ function PlayerContent() {
                     type={videoData.type_name}
                     year={videoData.vod_year}
                     size={20}
+                    isSecret={isSecret}
                   />
                   <span className="text-sm text-[var(--text-color-secondary)]">
                     收藏这个视频
@@ -227,10 +229,7 @@ function PlayerContent() {
       </main>
 
       {/* Favorites Sidebar - Left */}
-      <FavoritesSidebar />
-
-      {/* Watch History Sidebar - Right */}
-      <WatchHistorySidebar />
+      <FavoritesSidebar isSecret={isSecret} />
     </div>
   );
 }

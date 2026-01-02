@@ -52,6 +52,7 @@ function SecretHomePage() {
                         results={results}
                         availableSources={availableSources}
                         loading={loading}
+                        isSecret={true}
                     />
                 )}
 
@@ -67,7 +68,7 @@ function SecretHomePage() {
             </main>
 
             {/* Favorites Sidebar - Left */}
-            <FavoritesSidebar />
+            <FavoritesSidebar isSecret={true} />
         </div>
     );
 }

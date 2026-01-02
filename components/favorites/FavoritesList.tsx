@@ -9,9 +9,10 @@ import { FavoritesEmptyState } from './FavoritesEmptyState';
 interface FavoritesListProps {
     favorites: FavoriteItem[];
     onRemove: (videoId: string | number, source: string) => void;
+    isSecret?: boolean;
 }
 
-export function FavoritesList({ favorites, onRemove }: FavoritesListProps) {
+export function FavoritesList({ favorites, onRemove, isSecret = false }: FavoritesListProps) {
     if (favorites.length === 0) {
         return <FavoritesEmptyState />;
     }
@@ -23,6 +24,7 @@ export function FavoritesList({ favorites, onRemove }: FavoritesListProps) {
                     key={`${item.source}:${item.videoId}`}
                     item={item}
                     onRemove={() => onRemove(item.videoId, item.source)}
+                    isSecret={isSecret}
                 />
             ))}
         </div>

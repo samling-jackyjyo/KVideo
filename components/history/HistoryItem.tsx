@@ -8,39 +8,25 @@ import { Icons } from '@/components/ui/Icon';
 import { formatTime, formatDate } from '@/lib/utils/format-utils';
 import { PosterImage } from './PosterImage';
 import { FavoriteButton } from '@/components/favorites/FavoriteButton';
+import type { VideoHistoryItem } from '@/lib/types';
 
 interface HistoryItemProps {
-  videoId: string | number;
-  source: string;
-  title: string;
-  poster?: string;
-  episodeIndex: number;
-  episodes?: Array<{ name: string }>;
-  playbackPosition: number;
-  duration: number;
-  timestamp: number;
+  item: VideoHistoryItem;
   onRemove: () => void;
+  isSecret?: boolean;
 }
 
-export function HistoryItem({
-  videoId,
-  source,
-  title,
-  poster,
-  episodeIndex,
-  episodes,
-  playbackPosition,
-  duration,
-  timestamp,
-  onRemove,
-}: HistoryItemProps) {
+export function HistoryItem({ item, onRemove, isSecret = false }: HistoryItemProps) {
   const getVideoUrl = (): string => {
     const params = new URLSearchParams({
-      id: videoId.toString(),
-      source,
-      title,
-      episode: episodeIndex.toString(),
+      id: item.videoId.toString(),
+      source: item.source,
+      title: item.title,
+      episode: item.episodeIndex.toString(),
     });
+    if (isSecret) {
+      params.set('secret', '1');
+    }
     return `/player?${params.toString()}`;
   };
 
@@ -53,9 +39,9 @@ export function HistoryItem({
     }
   };
 
-  const progress = (playbackPosition / duration) * 100;
-  const episodeText = episodes && episodes.length > 0
-    ? episodes[episodeIndex]?.name || `第${episodeIndex + 1}集`
+  const progress = (item.playbackPosition / item.duration) * 100;
+  const episodeText = item.episodes && item.episodes.length > 0
+    ? item.episodes[item.episodeIndex]?.name || `第${item.episodeIndex + 1}集`
     : '';
 
   return (
@@ -74,12 +60,12 @@ export function HistoryItem({
       >
         <div className="flex gap-3">
           {/* Poster */}
-          <PosterImage poster={poster} title={title} progress={progress} />
+          <PosterImage poster={item.poster} title={item.title} progress={progress} />
 
           {/* Info */}
           <div className="flex-1 min-w-0">
             <h3 className="text-sm font-medium text-[var(--text-color)] truncate group-hover:text-[var(--accent-color)] transition-colors mb-1">
-              {title}
+              {item.title}
             </h3>
             {episodeText && (
               <p className="text-xs text-[var(--text-color-secondary)] mb-1">
@@ -87,8 +73,8 @@ export function HistoryItem({
               </p>
             )}
             <div className="flex items-center justify-between text-xs text-[var(--text-color-secondary)]">
-              <span>{formatTime(playbackPosition)} / {formatTime(duration)}</span>
-              <span>{formatDate(timestamp)}</span>
+              <span>{formatTime(item.playbackPosition)} / {formatTime(item.duration)}</span>
+              <span>{formatDate(item.timestamp)}</span>
             </div>
           </div>
 
@@ -96,14 +82,15 @@ export function HistoryItem({
           <div className="flex flex-col gap-1 self-start opacity-0 group-hover:opacity-100 transition-opacity">
             {/* Favorite button */}
             <FavoriteButton
-              videoId={videoId}
-              source={source}
-              title={title}
-              poster={poster}
+              videoId={item.videoId}
+              source={item.source}
+              title={item.title}
+              poster={item.poster}
               remarks={episodeText}
               size={14}
               className="!p-1.5 !bg-transparent !border-0 !shadow-none hover:!bg-[var(--glass-bg)]"
               showTooltip={false}
+              isSecret={isSecret}
             />
 
             {/* Delete button */}

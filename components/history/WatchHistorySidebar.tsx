@@ -6,7 +6,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useHistoryStore } from '@/lib/store/history-store';
+import { useHistory } from '@/lib/store/history-store';
 import { Icons } from '@/components/ui/Icon';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { HistoryHeader } from './HistoryHeader';
@@ -14,7 +14,7 @@ import { HistoryList } from './HistoryList';
 import { HistoryFooter } from './HistoryFooter';
 import { trapFocus } from '@/lib/accessibility/focus-management';
 
-export function WatchHistorySidebar() {
+export function WatchHistorySidebar({ isSecret = false }: { isSecret?: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     isOpen: boolean;
@@ -22,7 +22,7 @@ export function WatchHistorySidebar() {
     source?: string;
     isClearAll?: boolean;
   }>({ isOpen: false });
-  const { viewingHistory, removeFromHistory, clearHistory } = useHistoryStore();
+  const { viewingHistory, removeFromHistory, clearHistory } = useHistory(isSecret);
   const sidebarRef = useRef<HTMLElement>(null);
   const cleanupFocusTrapRef = useRef<(() => void) | null>(null);
 

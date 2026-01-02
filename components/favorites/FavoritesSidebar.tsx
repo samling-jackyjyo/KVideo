@@ -6,7 +6,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useFavoritesStore } from '@/lib/store/favorites-store';
+import { useFavorites } from '@/lib/store/favorites-store';
+import { WatchHistorySidebar } from '@/components/history/WatchHistorySidebar';
 import { Icons } from '@/components/ui/Icon';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { FavoritesHeader } from './FavoritesHeader';
@@ -14,7 +15,7 @@ import { FavoritesList } from './FavoritesList';
 import { FavoritesFooter } from './FavoritesFooter';
 import { trapFocus } from '@/lib/accessibility/focus-management';
 
-export function FavoritesSidebar() {
+export function FavoritesSidebar({ isSecret = false }: { isSecret?: boolean }) {
     const [isOpen, setIsOpen] = useState(false);
     const [deleteConfirm, setDeleteConfirm] = useState<{
         isOpen: boolean;
@@ -22,7 +23,7 @@ export function FavoritesSidebar() {
         source?: string;
         isClearAll?: boolean;
     }>({ isOpen: false });
-    const { favorites, removeFavorite, clearFavorites } = useFavoritesStore();
+    const { favorites, removeFavorite, clearFavorites } = useFavorites(isSecret);
     const sidebarRef = useRef<HTMLElement>(null);
     const cleanupFocusTrapRef = useRef<(() => void) | null>(null);
 
@@ -115,6 +116,7 @@ export function FavoritesSidebar() {
                 <FavoritesList
                     favorites={favorites}
                     onRemove={handleDeleteItem}
+                    isSecret={isSecret}
                 />
 
                 <FavoritesFooter
@@ -122,6 +124,9 @@ export function FavoritesSidebar() {
                     onClearAll={handleClearAll}
                 />
             </aside>
+
+            {/* Watch History Sidebar - Right side */}
+            <WatchHistorySidebar isSecret={isSecret} />
 
             {/* Confirm Dialog */}
             <ConfirmDialog

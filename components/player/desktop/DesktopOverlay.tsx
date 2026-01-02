@@ -119,7 +119,7 @@ export function DesktopOverlay({
                 <div className="absolute top-1/2 left-24 -translate-y-1/2 pointer-events-none transition-all duration-300 z-20">
                     <div className={`text-white text-3xl font-bold drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] ${isSkipBackwardAnimatingOut ? 'animate-scale-out' : 'animate-scale-in'
                         }`}>
-                        -{skipBackwardAmount}s
+                        -{skipBackwardAmount}秒
                     </div>
                 </div>
             )}
@@ -129,7 +129,7 @@ export function DesktopOverlay({
                 <div className="absolute top-1/2 right-24 -translate-y-1/2 pointer-events-none transition-all duration-300 z-20">
                     <div className={`text-white text-3xl font-bold drop-shadow-[0_4px_8px_rgba(0,0,0,0.8)] ${isSkipForwardAnimatingOut ? 'animate-scale-out' : 'animate-scale-in'
                         }`}>
-                        +{skipForwardAmount}s
+                        +{skipForwardAmount}秒
                     </div>
                 </div>
             )}

@@ -48,8 +48,8 @@ export function DesktopRightControls({
                     <button
                         onClick={onShowAirPlayMenu}
                         className="btn-icon"
-                        aria-label="AirPlay"
-                        title="AirPlay"
+                        aria-label="隔空播放"
+                        title="隔空播放"
                     >
                         <Icons.Airplay size={20} />
                     </button>
@@ -62,8 +62,8 @@ export function DesktopRightControls({
                     <button
                         onClick={onShowCastMenu}
                         className="btn-icon"
-                        aria-label="Google Cast"
-                        title="Google Cast"
+                        aria-label="投屏"
+                        title="投屏"
                     >
                         <Icons.Cast size={20} />
                     </button>

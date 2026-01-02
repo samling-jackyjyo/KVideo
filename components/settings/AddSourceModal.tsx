@@ -55,7 +55,7 @@ export function AddSourceModal({ isOpen, onClose, onAdd, existingIds, initialVal
 
             <div>
               <label htmlFor="source-url" className="block mb-2 font-medium text-[var(--text-color)]">
-                API 地址
+                接口地址
               </label>
               <input
                 id="source-url"

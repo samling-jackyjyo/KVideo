@@ -52,6 +52,9 @@ export function PasswordGate({ children, hasEnvPassword: initialHasEnvPassword }
         try {
             const res = await fetch('/api/config');
             const data = await res.json();
+            // Note: envPasswordSet is not directly used for immediate locking if we want to rely on real-time settings
+            // But we should respect the server config. 
+            // However, for the subscription fix, we mainly care about 'settings.passwordAccess' updating in real-time.
             const envPasswordSet = data.hasEnvPassword;
 
             // Updated lock state check
@@ -63,6 +66,32 @@ export function PasswordGate({ children, hasEnvPassword: initialHasEnvPassword }
             setIsLocked(currentlyLocked);
         }
     };
+
+    // Subscribe to settings changes (real-time updates)
+    useEffect(() => {
+        // Function to handle updates from the store
+        const handleSettingsUpdate = () => {
+            const settings = settingsStore.getSettings();
+            const isUnlocked = sessionStorage.getItem(SESSION_UNLOCKED_KEY) === 'true';
+
+            // We can't easily check env password synchronously here, but we can check local settings.
+            // If local setting says lock, and we are not unlocked, we lock.
+            // If local setting says unlock (and no env password known yet), we unlock.
+            // To be safe, we might just re-run checkLockStatus() but that's async.
+            // For immediate UI feedback on "Enable/Disable Password" toggle in settings:
+
+            // If password access is disabled in settings, and we assume no env password for a moment (or rely on previous state):
+            if (!settings.passwordAccess && !hasEnvPassword) {
+                setIsLocked(false);
+            } else if (settings.passwordAccess && !isUnlocked) {
+                setIsLocked(true);
+            }
+        };
+
+        const unsubscribe = settingsStore.subscribe(handleSettingsUpdate);
+        return () => unsubscribe();
+    }, [hasEnvPassword]);
+
 
 
     const handleUnlock = async (e: React.FormEvent) => {

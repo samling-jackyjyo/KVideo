@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useInfiniteScroll } from '@/lib/hooks/useInfiniteScroll';
 import { settingsStore } from '@/lib/store/settings-store';
 
@@ -19,6 +19,9 @@ export function usePremiumContent(categoryValue: string) {
     const [hasMore, setHasMore] = useState(true);
     const [page, setPage] = useState(1);
 
+    // Track source count to detect meaningful updates
+    const sourceCountRef = useRef(0);
+
     const loadVideos = useCallback(async (pageNum: number, append = false) => {
         if (loading) return;
 
@@ -33,6 +36,11 @@ export function usePremiumContent(categoryValue: string) {
                 // Check if any subscription sources are marked as premium
                 ...settings.subscriptions.filter(s => (s as any).group === 'premium')
             ].filter(s => (s as any).enabled !== false);
+
+            if (premiumSources.length === 0) {
+                setLoading(false);
+                return;
+            }
 
             // Should we include normal subscriptions too if categoryValue requests them?
             // The API handles filtering by categoryValue map.
@@ -64,12 +72,43 @@ export function usePremiumContent(categoryValue: string) {
         }
     }, [loading, categoryValue]);
 
+    // Initial load and category change
     useEffect(() => {
         setPage(1);
         setVideos([]);
         setHasMore(true);
+
+        // Initial check for sources
+        const settings = settingsStore.getSettings();
+        const sourcesCount = settings.premiumSources.length + settings.subscriptions.length;
+        sourceCountRef.current = sourcesCount;
+
         loadVideos(1, false);
     }, [categoryValue]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Subscribe to settings changes to handle async source loading
+    useEffect(() => {
+        const handleSettingsUpdate = () => {
+            const settings = settingsStore.getSettings();
+            const premiumSources = [
+                ...settings.premiumSources,
+                ...settings.subscriptions.filter(s => (s as any).group === 'premium')
+            ].filter(s => (s as any).enabled !== false);
+
+            const currentSourceCount = premiumSources.length;
+
+            // If we have 0 videos and suddenly gain sources, we should retry loading
+            // OR if the number of sources significantly changed (e.g. from 0 to N)
+            if (videos.length === 0 && currentSourceCount > 0 && !loading) {
+                // Determine if we should reload. 
+                // Mostly needed when initial load failed due to no sources.
+                loadVideos(1, false);
+            }
+        };
+
+        const unsubscribe = settingsStore.subscribe(handleSettingsUpdate);
+        return () => unsubscribe();
+    }, [loadVideos, videos.length, loading]);
 
     const { prefetchRef, loadMoreRef } = useInfiniteScroll({
         hasMore,

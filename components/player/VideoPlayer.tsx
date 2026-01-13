@@ -43,9 +43,19 @@ export function VideoPlayer({
 
   // Get showModeIndicator setting
   const [showModeIndicator, setShowModeIndicator] = useState(false);
+
   useEffect(() => {
+    // Initial value
     setShowModeIndicator(settingsStore.getSettings().showModeIndicator);
+
+    // Subscribe to changes
+    const unsubscribe = settingsStore.subscribe(() => {
+      setShowModeIndicator(settingsStore.getSettings().showModeIndicator);
+    });
+
+    return () => unsubscribe();
   }, []);
+
 
   // Use reactive hook to subscribe to history updates
   // This ensures the component re-renders when history is hydrated from localStorage
